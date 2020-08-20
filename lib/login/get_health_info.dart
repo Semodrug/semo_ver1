@@ -9,7 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 final fireInstance = Firestore.instance;
 
 void createRecode(Map<String, dynamic> data) async {
-  await fireInstance.collection('privacy').document('1').updateData(data);
+  await fireInstance.collection('user_info').document('1').updateData(data);
 
 //  DocumentReference ref = await fireInstance.collection('privacy').add(data);
 //  print(ref.documentID);
