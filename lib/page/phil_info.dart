@@ -120,7 +120,7 @@ Widget _topInfo(context) {
                 ),
                 Center(
                   child: SizedBox(
-                    //child: Image.asset('image/01.jpg'),
+                    child: Image.asset('images/01.png'),
                     width: 200.0,
                     height: 100.0,
                   ),
@@ -235,11 +235,9 @@ Widget _myTab() {
             width: double.infinity,
             height: 500.0,
             child: TabBarView(
-                /* 여기에 은영학우님 page 넣기! */
-                children: [
-                  _specificInfo(),
-                  MyHomePage()],
-                ),
+              /* 여기에 은영학우님 page 넣기! */
+              children: [_specificInfo(), MyHomePage()],
+            ),
           )
         ],
       ));
