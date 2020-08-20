@@ -29,10 +29,10 @@ class _PhilInfoPageState extends State<PhilInfoPage> {
           centerTitle: true,
           backgroundColor: Colors.white,
           elevation: 1.0,
-          leading: Icon(
-            Icons.arrow_back,
-            color: Colors.teal[400],
-          ),
+//          leading: Icon(
+//            Icons.arrow_back,
+//            color: Colors.teal[400],
+//          ),
           actions: [
             IconButton(
               icon: Icon(Icons.search),
