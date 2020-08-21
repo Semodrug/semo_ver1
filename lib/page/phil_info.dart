@@ -1,13 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:category_list/Review/MyHomePage.dart';
+
+/* data 얻는 샘플 코드 - 참고용*/
 //  void getData() {
 //    fireInstance.collection("user").getDocs().then((QuerySnapshot snapshot) {
 //      snapshot.documents.forEach((f) => print('${f.data}}'));
 //    });
 //  }
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-//import 'get_health_info.dart';
-import 'package:category_list/Review/MyHomePage.dart';
 
 final fireInstance = Firestore.instance;
 
@@ -245,43 +245,236 @@ Widget _myTab() {
 
 /* 약의 자세한 정보들 */
 Widget _specificInfo() {
-  return Padding(
-    padding: const EdgeInsets.fromLTRB(20, 25, 20, 0),
-    child:
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-      Text(
-        "효능효과",
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
-      Text(
-        "1. 주효능효과\n감기로 인한 발열 및 통증, 두통, 신경통, 근육통, 월경통, 염좌통",
-      ),
-      Text(
-        "2. 다음 질환에도 사용할 수 있다.\n치통, 관절통, 류마티양 통증",
-      ),
-      SizedBox(
-        child: Divider(color: Colors.grey),
-      ),
-      Text(
-        "용법용량",
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
-      Text(
-        "1회 400g",
-      ),
-      SizedBox(
-        child: Divider(color: Colors.grey),
-      ),
-      Text(
-        "복약정보",
-        style: TextStyle(fontWeight: FontWeight.bold),
-      ),
-      Text(
-        "- 충분한 물과 함께 투여하세요.\n- 정기적으로 술을 마시는 사람은 이 약을 투여하기 전 반드시 전문가와 상의하세요",
-      ),
-      Text(
-        "- 황달 등 간기능 이상징후가 나타날 경우에는 전문가와 상의하세요.\n- 전문가와 상의없이 다른 소염진통제와 병용하지 마세요.",
-      )
-    ]),
+  return StreamBuilder(
+      stream: fireInstance
+          .collection('/drug/OYzMN1wz5WGmkmd1I8p2/DOCS')
+          .snapshots(),
+      builder: (context, snapshot) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 25, 20, 0),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "효능효과",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  snapshot.data.documents[0]['title'][0],
+                ),
+                Text(
+                  snapshot.data.documents[0]['paragraph'][0],
+                ),
+                Text(
+                  snapshot.data.documents[0]['title'][1],
+                ),
+                Text(
+                  snapshot.data.documents[0]['paragraph'][1],
+                ),
+                SizedBox(
+                  child: Divider(color: Colors.grey),
+                ),
+                Text(
+                  "용법용량",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                //for(i = 0; i < snapshot.data.documents[2]['paragraph'].toList().length; i++)
+
+                Text(
+                  snapshot.data.documents[2]['paragraph'][0],
+                ),
+                Text(
+                  snapshot.data.documents[2]['paragraph'][1],
+                ),
+                Text(
+                  snapshot.data.documents[2]['paragraph'][2],
+                ),
+                Text(
+                  snapshot.data.documents[2]['paragraph'][3],
+                ),
+                SizedBox(
+                  child: Divider(color: Colors.grey),
+                ),
+                Text(
+                  "복약정보",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  "- 충분한 물과 함께 투여하세요.\n- 정기적으로 술을 마시는 사람은 이 약을 투여하기 전 반드시 전문가와 상의하세요",
+                ),
+                Text(
+                  "- 황달 등 간기능 이상징후가 나타날 경우에는 전문가와 상의하세요.\n- 전문가와 상의없이 다른 소염진통제와 병용하지 마세요.",
+                )
+              ]),
+        );
+      });
+}
+
+/* CRUD 참고 코드
+/// Firestore CRUD Logic
+
+// 문서 생성 (Create)
+void createDoc(String name, String description) {
+  Firestore.instance.collection(colName).add({
+    fnName: name,
+    fnDescription: description,
+    fnDatetime: Timestamp.now(),
+  });
+}
+
+// 문서 조회 (Read)
+void showDocument(String documentID) {
+  Firestore.instance
+      .collection(colName)
+      .document(documentID)
+      .get()
+      .then((doc) {
+    showReadDocSnackBar(doc);
+  });
+}
+
+// 문서 갱신 (Update)
+void updateDoc(String docID, String name, String description) {
+  Firestore.instance.collection(colName).document(docID).updateData({
+    fnName: name,
+    fnDescription: description,
+  });
+}
+
+// 문서 삭제 (Delete)
+void deleteDoc(String docID) {
+  Firestore.instance.collection(colName).document(docID).delete();
+}
+
+void showCreateDocDialog() {
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text("Create New Document"),
+        content: Container(
+          height: 200,
+          child: Column(
+            children: <Widget>[
+              TextField(
+                autofocus: true,
+                decoration: InputDecoration(labelText: "Name"),
+                controller: _newNameCon,
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: "Description"),
+                controller: _newDescCon,
+              )
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text("Cancel"),
+            onPressed: () {
+              _newNameCon.clear();
+              _newDescCon.clear();
+              Navigator.pop(context);
+            },
+          ),
+          FlatButton(
+            child: Text("Create"),
+            onPressed: () {
+              if (_newDescCon.text.isNotEmpty &&
+                  _newNameCon.text.isNotEmpty) {
+                createDoc(_newNameCon.text, _newDescCon.text);
+              }
+              _newNameCon.clear();
+              _newDescCon.clear();
+              Navigator.pop(context);
+            },
+          )
+        ],
+      );
+    },
   );
 }
+
+void showReadDocSnackBar(DocumentSnapshot doc) {
+  _scaffoldKey.currentState
+    ..hideCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        backgroundColor: Colors.deepOrangeAccent,
+        duration: Duration(seconds: 5),
+        content: Text(
+            "$fnName: ${doc[fnName]}\n$fnDescription: ${doc[fnDescription]}"
+                "\n$fnDatetime: ${timestampToStrDateTime(doc[fnDatetime])}"),
+        action: SnackBarAction(
+          label: "Done",
+          textColor: Colors.white,
+          onPressed: () {},
+        ),
+      ),
+    );
+}
+
+void showUpdateOrDeleteDocDialog(DocumentSnapshot doc) {
+  _undNameCon.text = doc[fnName];
+  _undDescCon.text = doc[fnDescription];
+  showDialog(
+    barrierDismissible: false,
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text("Update/Delete Document"),
+        content: Container(
+          height: 200,
+          child: Column(
+            children: <Widget>[
+              TextField(
+                decoration: InputDecoration(labelText: "Name"),
+                controller: _undNameCon,
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: "Description"),
+                controller: _undDescCon,
+              )
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text("Cancel"),
+            onPressed: () {
+              _undNameCon.clear();
+              _undDescCon.clear();
+              Navigator.pop(context);
+            },
+          ),
+          FlatButton(
+            child: Text("Update"),
+            onPressed: () {
+              if (_undNameCon.text.isNotEmpty &&
+                  _undDescCon.text.isNotEmpty) {
+                updateDoc(doc.documentID, _undNameCon.text, _undDescCon.text);
+              }
+              Navigator.pop(context);
+            },
+          ),
+          FlatButton(
+            child: Text("Delete"),
+            onPressed: () {
+              deleteDoc(doc.documentID);
+              Navigator.pop(context);
+            },
+          )
+        ],
+      );
+    },
+  );
+}
+
+String timestampToStrDateTime(Timestamp ts) {
+  return DateTime.fromMicrosecondsSinceEpoch(ts.microsecondsSinceEpoch)
+      .toString();
+}
+}
+
+*/
