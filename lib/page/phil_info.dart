@@ -191,7 +191,7 @@ void _showWarning(context) {
   );
 }
 
-/* 카테고리전용 buttion*/
+/* 카테고리전용 button*/
 Widget _categoryButton(str) {
   return Container(
     width: 24 + str.length.toDouble() * 10,
