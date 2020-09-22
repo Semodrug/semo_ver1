@@ -21,7 +21,7 @@ void createRecode(Map<String, dynamic> data) async {
   FirebaseUser user = await _auth.currentUser();
 
   //user.uid;
-  await fireInstance.collection('privacy').document('1').setData(data);
+  await fireInstance.collection('users').document('1').setData(data);
 
 //  DocumentReference ref = await fireInstance.collection('privacy').add(data);
 //  print(ref.documentID);
