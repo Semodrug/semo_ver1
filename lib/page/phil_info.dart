@@ -18,10 +18,20 @@ class PhilInfoPage extends StatefulWidget {
 class _PhilInfoPageState extends State<PhilInfoPage> {
   final fireInstance = Firestore.instance;
 
+  //var favoriteList;
+  //List<String> favoriteList = [];
+
 /* 약 이름, 회사 등 위쪽에 위치한 정보들 */
   Widget _topInfo(context) {
+    Stream drugStream = fireInstance.collection('drug').snapshots();
+    Stream savedListStream = fireInstance
+        .collection('user')
+        .document('1')
+        .collection('savedList')
+        .snapshots();
+
     return StreamBuilder(
-        stream: fireInstance.collection('drug').snapshots(),
+        stream: drugStream,
         builder: (context, snapshot) {
           return Stack(children: [
             Positioned(
@@ -35,17 +45,61 @@ class _PhilInfoPageState extends State<PhilInfoPage> {
                   ),
                   onPressed: () => _showWarning(context)),
             ),
+
             Positioned(
                 bottom: 70,
                 right: 0,
                 child: IconButton(
-                    padding: EdgeInsets.all(2.0),
-                    icon: Icon(
-                      Icons.favorite_border,
-                      //alreadySaved ? Icons.favorite : Icons.favorite_border,
-                      //              //color: alreadySaved ? Colors.redAccent : null,
-                    ),
-                    onPressed: () => print('좋아요!'))),
+                  padding: EdgeInsets.all(2.0),
+                  icon: Icon(
+                    Icons.favorite_border,
+                    //alreadySaved ? Icons.favorite : Icons.favorite_border,
+                    //              //color: alreadySaved ? Colors.redAccent : null,
+                  ),
+                  onPressed: () => print('보관함 추가!'),
+                  // onPressed: () async => {
+                  // ref.updateData({
+                  //   favoriteList: FieldValue.arrayUnion(snapshot.data.documents[0]['ITEM_SEQ'])
+                  // });
+
+                  //}
+                )),
+
+            /*
+                Firestore.instance.
+                    .collection('friendships')
+                    .document(caller.data["uid"])
+                    .updateData({
+                  friends: FieldValue.arrayUnion({
+                    friendDisplayName: snapshot.data["friendDisplayName"],
+                    friendUid: snapshot.ref
+                  })
+                });
+                */
+
+            // TO DO: press 했을 때 collection에 list를 만들어 seq_num 을 저장한다 !!
+
+            // way 1)
+            // 1. DB에서 favoritelist를 불러와서,
+            // 2. 거기다가 원하는 약의 seq num을 add/delete 후
+            // 3. list에 updata나 add를 통해서 넣는다
+            // List<String> favoriteList = ;
+
+            // void createRecode(Map<String, dynamic> data) async {
+            // setState(() {
+            // isPressed[index] = !isPressed[index];
+            // isPressed[index]
+            // ? disease_list.add(buttonName)
+            //     : disease_list.remove(buttonName);
+            // });
+
+            // createRecode('disease_list': favoriteList)
+            // })),
+
+            // await fireInstance.collection('users').document('1').updateData(data);
+
+            // way 2) 바로 document의 favoriteList에 접근해서 add/delete 해준다
+
             Positioned(
               bottom: 0,
               right: 0,

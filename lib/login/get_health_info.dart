@@ -13,7 +13,8 @@ void createRecode(Map<String, dynamic> data) async {
 
   // await fireInstance.collection('user_info').document('1').updateData(data);
 
-//  DocumentReference ref = await fireInstance.collection('privacy').add(data);
+//  DocumentReference ref = await
+//  //fireInstance.collection('privacy').add(data);
 //  print(ref.documentID);
 }
 
