@@ -40,29 +40,35 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 void main() async {
   // TODO(Salakar): Firebase should be initialized via a FutureBuilder or a StatefulWidget,
- // runApp(MyApp());
-  runApp(MaterialApp(
-    initialRoute: '/',
-    routes: {
-      // When we navigate to the "/" route, build the FirstScreen Widget
-      // "/" Route로 이동하면, FirstScreen 위젯을 생성합니다.
-      '/': (context) => MyApp(),
-      // "/second" route로 이동하면, SecondScreen 위젯을 생성합니다.
-      '/pressButtonNewPage': (context) => OverlayWithHole(),
-      '/HomeDrug' : (context) => HomeDrugPage(),
-    },
-  ));
+  runApp(MyApp());
+
+
 
 }
 
 class MyApp extends StatelessWidget {
   @override
+ /*
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Login with Email',
+      title: '내 약이 궁금할 땐',
       theme: new ThemeData(
         primarySwatch: Colors.teal,
-      ),      home: MyHomePage(title: 'Login with Email'),
+      ),      home: MyHomePage(title: '이약모약'),
+    );
+  }
+*/
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        title: 'IYMY',
+        theme: ThemeData(
+          primaryColor: Colors.teal,
+        ),
+        home: MyHomePage() ,
+        initialRoute: '/signIn', //############CONNECT
+        routes: {
+          '/signIn': (context) => SignInPage(),
+        }
     );
   }
 }
@@ -76,6 +82,78 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[
+                    Colors.teal[100],
+                    //Colors.teal[50],
+                    Colors.teal[200]
+                  ])
+          ),
+        ),//grada
+      ),
+      body: Container(
+        height: 700,
+      width: double.infinity,
+      child: FlatButton(
+        child:
+            Center(child:         Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text("내 약이 궁금할 땐", style: TextStyle(fontSize: 15), textAlign: TextAlign.center,),
+                Text("이약모약", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
+              ],
+            ),
+                ),
+        onPressed: () { Navigator.pushNamed(context, '/signIn');},
+      ),
+
+  /*
+          Center(
+//            child:
+//              Container(
+//                child: Padding(
+//                  padding: EdgeInsets.all(20),
+                  child: Container(
+                    height: 500,
+                    width: double.infinity,
+                    child: FlatButton(
+                      child: Column(
+                       children: <Widget>[
+                          Center(
+                            child:
+                            Text("이약모약", textAlign: TextAlign.center,
+                              style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25
+                            ),),
+                         // ),
+                        ],
+                      ),
+                      onPressed: () { Navigator.pushNamed(context, '/signIn');},
+
+                    ),
+                  ),
+*/
+//                ),
+//              )
+
+
+            )
+    );
+  }
+
+}
+
+/*
 class _MyHomePageState extends State<MyHomePage> {
   FirebaseUser user;
   @override
@@ -152,6 +230,8 @@ class _MyHomePageState extends State<MyHomePage> {
 */
 
 }
+
+*/
 
 
 

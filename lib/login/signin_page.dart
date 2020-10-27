@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:category_list/login/register_page.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import '../page/home.dart';
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -23,6 +23,21 @@ class SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.android),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        HomeDrugPage()//
+                  //CategoryMenu()
+                ));
+
+            //Navigator.pushNamed(context, '/HomeDrug');
+          },
+        ),
         centerTitle: true,
         //title: Text(widget.title),
         flexibleSpace: Container(
