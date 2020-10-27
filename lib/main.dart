@@ -31,10 +31,27 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import './login/register_page.dart';
 import './login/signin_page.dart';
+import './page/home.dart';
+
+import './page/home_add_button_stack.dart';//add dan
+
+import 'package:google_sign_in/google_sign_in.dart';
+
 
 void main() async {
   // TODO(Salakar): Firebase should be initialized via a FutureBuilder or a StatefulWidget,
-  runApp(MyApp());
+ // runApp(MyApp());
+  runApp(MaterialApp(
+    initialRoute: '/',
+    routes: {
+      // When we navigate to the "/" route, build the FirstScreen Widget
+      // "/" Route로 이동하면, FirstScreen 위젯을 생성합니다.
+      '/': (context) => MyApp(),
+      // "/second" route로 이동하면, SecondScreen 위젯을 생성합니다.
+      '/pressButtonNewPage': (context) => OverlayWithHole(),
+      '/HomeDrug' : (context) => HomeDrugPage(),
+    },
+  ));
 
 }
 
@@ -66,6 +83,21 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        leading: IconButton(
+          icon: Icon(Icons.android),
+          color: Colors.white,
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        HomeDrugPage()//
+                  //CategoryMenu()
+                ));
+
+            //Navigator.pushNamed(context, '/HomeDrug');
+          },
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,6 +132,24 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+/*
+  Future<UserCredential> signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+    // Create a new credential
+    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+*/
 
 }
 

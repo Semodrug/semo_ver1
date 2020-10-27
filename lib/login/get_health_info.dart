@@ -1,3 +1,4 @@
+import 'package:category_list/page/home.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -226,7 +227,8 @@ class _GetHealthInfoPageState extends State<GetHealthInfoPage> {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      CategoryMenu()));
+                                                  HomeDrugPage()));
+
                                         })),
                               ),
                             ],
