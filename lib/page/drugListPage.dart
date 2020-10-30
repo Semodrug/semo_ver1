@@ -170,83 +170,87 @@ class _ListPageState extends State<ListPage> {
                   itemCount: snapshot.data.length,
                   itemBuilder: (_, index) {
                     return GestureDetector(
-                    onTap: () =>  {
-                          Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                PhilInfoPage())),
-                        },
-
-                        child: Container(
-                          width: double.infinity,
-                          height: 100.0,
-                          child: Material(
+                      onTap: () => {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    PhilInfoPage(snapshot.data[index].data))),
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        height: 100.0,
+                        child: Material(
                             color: Colors.white,
-                            child: Row(children: [
-                              Container(
-                                child: ClipRRect(
-                                  child: Image(
-                                      width: 120,
-                                      height: 70,
-                                      fit: BoxFit.contain,
-                                      alignment: Alignment.center,
-                                      image: NetworkImage(
-                                          snapshot.data[index].data['image'])),
+                            child: Row(
+                              children: [
+                                Container(
+                                  child: ClipRRect(
+                                    child: Image(
+                                        width: 120,
+                                        height: 70,
+                                        fit: BoxFit.contain,
+                                        alignment: Alignment.center,
+                                        image: NetworkImage(snapshot
+                                            .data[index].data['image'])),
+                                  ),
                                 ),
-                              ),
-                              Container(
-                                //color: Colors.white,
-                                  //alignment: Alignment.center,
-                                  padding: EdgeInsets.fromLTRB(8, 5, 5, 5),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: <Widget>[
-                                          Text(
-                                            snapshot.data[index].data['ENTP_NAME'],
-                                            style: TextStyle(fontSize: 10),
-                                          )
-                                        ],
-                                      ),
-                                      Row(children: [
-                                        Text(
-                                          snapshot.data[index].data['ITEM_NAME'],
-                                          style: TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold),
-                                        )
-                                      ]),
-                                      Row(
-                                          //mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
+                                Container(
+                                    //color: Colors.white,
+                                    //alignment: Alignment.center,
+                                    padding: EdgeInsets.fromLTRB(8, 5, 5, 5),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: <Widget>[
                                             Text(
-                                              '별점 모양 /',
-                                              style: TextStyle(fontSize: 12),
-                                            ),
-                                            Text(
-                                              '총 별점의 평균 /',
-                                              style: TextStyle(fontSize: 12),
-                                            ),
-                                            Text(
-                                              '(${snapshot.data[index].data['review']}개)',
-                                              style: TextStyle(fontSize: 12),
+                                              snapshot.data[index]
+                                                  .data['ENTP_NAME'],
+                                              style: TextStyle(fontSize: 10),
                                             )
-                                          ]),
-                                      Expanded(
-                                          child: Row(
-                                        children: [
-                                          _categoryButton((snapshot
-                                              .data[index].data['category']))
-                                          //_categoryButton('hi')
-                                        ],
-                                      ))
-                                    ],
-                                  )),
-                            ],
-                        )),
+                                          ],
+                                        ),
+                                        Row(children: [
+                                          Text(
+                                            snapshot
+                                                .data[index].data['ITEM_NAME'],
+                                            style: TextStyle(
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                        ]),
+                                        Row(
+                                            //mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                '별점 모양 /',
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Text(
+                                                '총 별점의 평균 /',
+                                                style: TextStyle(fontSize: 12),
+                                              ),
+                                              Text(
+                                                '(${snapshot.data[index].data['review']}개)',
+                                                style: TextStyle(fontSize: 12),
+                                              )
+                                            ]),
+                                        Expanded(
+                                            child: Row(
+                                          children: [
+                                            _categoryButton((snapshot
+                                                .data[index].data['category']))
+                                            //_categoryButton('hi')
+                                          ],
+                                        ))
+                                      ],
+                                    )),
+                              ],
+                            )),
                       ),
                     );
                   });
