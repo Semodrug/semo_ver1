@@ -29,11 +29,9 @@ class SignInPageState extends State<SignInPage> {
           onPressed: () {
             Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        HomeDrugPage()//
-                  //CategoryMenu()
-                ));
+                MaterialPageRoute(builder: (context) => HomeDrugPage() //
+                    //CategoryMenu()
+                    ));
 
             //Navigator.pushNamed(context, '/HomeDrug');
           },
@@ -46,19 +44,18 @@ class SignInPageState extends State<SignInPage> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: <Color>[
-                    Colors.teal[100],
-                    //Colors.teal[50],
-                    Colors.teal[200]
-                  ])
-          ),
-        ),//gradation
+                Colors.teal[100],
+                //Colors.teal[50],
+                Colors.teal[200]
+              ])),
+        ), //gradation
         actions: <Widget>[
           Builder(builder: (BuildContext context) {
             return FlatButton(
               child: const Text('Log out'),
               textColor: Theme.of(context).buttonColor,
               onPressed: () async {
-                final FirebaseUser user = await _auth.currentUser();
+                final User user = await _auth.currentUser;
                 if (user == null) {
                   Scaffold.of(context).showSnackBar(const SnackBar(
                     content: Text('No one has signed in.'),
@@ -83,8 +80,8 @@ class SignInPageState extends State<SignInPage> {
             //_EmailLinkSignInSection(),
             //_AnonymouslySignInSection(),
             //_GoogleSignInSection(),
-           // _PhoneSignInSection(Scaffold.of(context)),
-           // _OtherProvidersSignInSection(),
+            // _PhoneSignInSection(Scaffold.of(context)),
+            // _OtherProvidersSignInSection(),
           ],
         );
       }),
@@ -116,23 +113,19 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Container(
-            child: const Text('이약모약',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold
-            ),),
+            child: const Text(
+              '이약모약',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
             padding: const EdgeInsets.all(16),
             alignment: Alignment.center,
           ),
           TextFormField(
             controller: _emailController,
             decoration: const InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(15,0,0,0),
+              contentPadding: EdgeInsets.fromLTRB(15, 0, 0, 0),
               labelText: '아이디',
-              labelStyle: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14.0
-              ),
+              labelStyle: TextStyle(color: Colors.grey, fontSize: 14.0),
             ),
             validator: (String value) {
               if (value.isEmpty) {
@@ -144,12 +137,10 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
           TextFormField(
             controller: _passwordController,
             decoration: const InputDecoration(
-              contentPadding: EdgeInsets.fromLTRB(15,0,0,0),
+              contentPadding: EdgeInsets.fromLTRB(15, 0, 0, 0),
               labelText: '비밀번호',
-              labelStyle: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 14.0
-              ),),
+              labelStyle: TextStyle(color: Colors.grey, fontSize: 14.0),
+            ),
             validator: (String value) {
               if (value.isEmpty) {
                 return 'Please enter some text';
@@ -157,9 +148,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
               return null;
             },
           ),
-          SizedBox(
-            height: 30.0
-          ),
+          SizedBox(height: 30.0),
           SizedBox(
             //padding: const EdgeInsets.symmetric(vertical: 16.0),
             //alignment: Alignment.center,
@@ -172,8 +161,12 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
                   _signInWithEmailAndPassword();
                 }
               },
-              shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(10.0)),
-              child: const Text('로그인', style: TextStyle(color: Colors.white),),
+              shape: RoundedRectangleBorder(
+                  borderRadius: new BorderRadius.circular(10.0)),
+              child: const Text(
+                '로그인',
+                style: TextStyle(color: Colors.white),
+              ),
               color: Colors.teal[400],
             ),
           ),
@@ -188,37 +181,35 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
           ),*/
           Container(
             child: FlatButton(
-              child: Text('아이디/비밀번호 찾기',
+              child: Text(
+                '아이디/비밀번호 찾기',
                 style: TextStyle(
                     decoration: TextDecoration.underline,
                     fontSize: 13.0,
                     color: Colors.grey[400]),
               ),
-              onPressed: (){},//아이디 비밀번호 찾기 페이지로 이동
+              onPressed: () {}, //아이디 비밀번호 찾기 페이지로 이동
             ),
           ),
           Container(
-            child:Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                Text('혹시 이약모약 사용이 처음이신가요?' ,
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text(
+                '혹시 이약모약 사용이 처음이신가요?',
+                style: TextStyle(fontSize: 12.0, color: Colors.grey[400]),
+              ),
+              FlatButton(
+                onPressed: () =>
+                    _pushPage(context, RegisterPage()), //register page로 이동
+                child: Text(
+                  '회원가입',
                   style: TextStyle(
-                  fontSize: 12.0,
-                  color: Colors.grey[400]),
+                      decoration: TextDecoration.underline,
+                      fontSize: 12.0,
+                      color: Colors.black),
                 ),
-                FlatButton(
-                  onPressed: () => _pushPage(context, RegisterPage()),//register page로 이동
-                  child: Text('회원가입',
-                    style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        fontSize: 12.0,
-                        color: Colors.black),
-                  ),
-                ),
-              ]
-            ),
+              ),
+            ]),
           ),
-
           Container(
             alignment: Alignment.center,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -251,7 +242,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
 
   // Example code of how to sign in with email and password.
   void _signInWithEmailAndPassword() async {
-    final FirebaseUser user = (await _auth.signInWithEmailAndPassword(
+    final User user = (await _auth.signInWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
     ))
@@ -266,6 +257,7 @@ class _EmailPasswordFormState extends State<_EmailPasswordForm> {
     }
   }
 }
+
 /*
 class _EmailLinkSignInSection extends StatefulWidget {
   @override

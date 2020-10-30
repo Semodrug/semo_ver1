@@ -28,8 +28,6 @@ class Record {
 //        assert(map['id'] != null),
 //        assert(map['id'] != null),
 
-
-
         name = map['name'],
         votes = map['votes'],
         effect = map['effect'],
@@ -43,7 +41,7 @@ class Record {
 //        id = map['id'],
 
   Record.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data, reference: snapshot.reference);
+      : this.fromMap(snapshot.data(), reference: snapshot.reference);
 
   @override
   String toString() => "Record<$name:$votes>";

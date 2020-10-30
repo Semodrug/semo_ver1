@@ -33,22 +33,22 @@ import './login/register_page.dart';
 import './login/signin_page.dart';
 import './page/home.dart';
 
-import './page/home_add_button_stack.dart';//add dan
+import './page/home_add_button_stack.dart'; //add dan
 
 import 'package:google_sign_in/google_sign_in.dart';
 
-
 void main() async {
   // TODO(Salakar): Firebase should be initialized via a FutureBuilder or a StatefulWidget,
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
   runApp(MyApp());
-
-
-
 }
 
 class MyApp extends StatelessWidget {
   @override
- /*
+  /*
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '내 약이 궁금할 땐',
@@ -64,12 +64,11 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primaryColor: Colors.teal,
         ),
-        home: MyHomePage() ,
+        home: MyHomePage(),
         initialRoute: '/signIn', //############CONNECT
         routes: {
           '/signIn': (context) => SignInPage(),
-        }
-    );
+        });
   }
 }
 
@@ -86,37 +85,46 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: <Color>[
-                    Colors.teal[100],
-                    //Colors.teal[50],
-                    Colors.teal[200]
-                  ])
-          ),
-        ),//grada
-      ),
-      body: Container(
-        height: 700,
-      width: double.infinity,
-      child: FlatButton(
-        child:
-            Center(child:         Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text("내 약이 궁금할 땐", style: TextStyle(fontSize: 15), textAlign: TextAlign.center,),
-                Text("이약모약", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold), textAlign: TextAlign.center,),
-              ],
+        appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: <Color>[
+                  Colors.teal[100],
+                  //Colors.teal[50],
+                  Colors.teal[200]
+                ])),
+          ), //grada
+        ),
+        body: Container(
+          height: 700,
+          width: double.infinity,
+          child: FlatButton(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    "내 약이 궁금할 땐",
+                    style: TextStyle(fontSize: 15),
+                    textAlign: TextAlign.center,
+                  ),
+                  Text(
+                    "이약모약",
+                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
             ),
-                ),
-        onPressed: () { Navigator.pushNamed(context, '/signIn');},
-      ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/signIn');
+            },
+          ),
 
-  /*
+          /*
           Center(
 //            child:
 //              Container(
@@ -145,12 +153,8 @@ class _MyHomePageState extends State<MyHomePage> {
 */
 //                ),
 //              )
-
-
-            )
-    );
+        ));
   }
-
 }
 
 /*
@@ -232,6 +236,3 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 */
-
-
-

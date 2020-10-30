@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'phil_info.dart';
 import 'home_add_button_stack.dart';
 
+var num = 0;
+
 class HomeDrugPage extends StatefulWidget {
   HomeDrugPage() {}
 
@@ -32,12 +34,12 @@ class _HomeDrugPageState extends State<HomeDrugPage> {
               ),
               color: Colors.white,
               onPressed: _search //누르면 search page
-          )
+              )
         ],
       ),
       body: Container(
         child: StreamBuilder(
-            stream: Firestore.instance.collection("drug").snapshots(),
+            stream: FirebaseFirestore.instance.collection("drug").snapshots(),
             builder: (context, snapshot) {
               return Column(
                 children: <Widget>[
@@ -77,21 +79,22 @@ class _HomeDrugPageState extends State<HomeDrugPage> {
                             ),
                           ],
                         ),
-                        Text("# of drug"),
+                        Text(num.toString()),
                         Expanded(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                FlatButton(
-                                  child: Text(
-                                    "편집",
-                                    style: TextStyle(
-                                      color: Colors.teal[400],
-                                    ),
-                                  ),
-                                )
-                              ],
-                            )),
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            FlatButton(
+                              onPressed: null,
+                              child: Text(
+                                "편집",
+                                style: TextStyle(
+                                  color: Colors.teal[400],
+                                ),
+                              ),
+                            )
+                          ],
+                        )),
                       ],
                     ),
                   ),
@@ -99,7 +102,8 @@ class _HomeDrugPageState extends State<HomeDrugPage> {
                     child: MyDrugListPage(),
                   ),
 
-                  ButtonTheme(//이게 왜 떠오르고 난리냐 거기 계속 고정하게끔 해두기!!
+                  ButtonTheme(
+                    //이게 왜 떠오르고 난리냐 거기 계속 고정하게끔 해두기!!
                     padding: EdgeInsets.fromLTRB(5, 5, 5, 15),
                     minWidth: 340.0,
                     height: 70.0,
@@ -126,15 +130,15 @@ class _HomeDrugPageState extends State<HomeDrugPage> {
         items: [
           BottomNavigationBarItem(
               icon: Icon(Icons.home),
-              title: Text('홈'),
+              label: '홈',
               backgroundColor: Colors.teal[400]),
           BottomNavigationBarItem(
               icon: Icon(Icons.linked_camera),
-              title: Text('약 검색'), // 이걸 없애면 null이라고 에러가 뜸
+              label: '약 검색', // 이걸 없애면 null이라고 에러가 뜸
               backgroundColor: Colors.teal[400]),
           BottomNavigationBarItem(
               icon: Icon(Icons.list),
-              title: Text('카테고리'),
+              label: '카테고리',
               backgroundColor: Colors.teal[400]),
         ],
         onTap: (index) {
@@ -148,15 +152,15 @@ class _HomeDrugPageState extends State<HomeDrugPage> {
 
 //////////검색 페이지 만들면 이건 없애기///////////////
   _search() => Navigator.of(context).push(
-    //검색 페이지로 임의로 이동
-    MaterialPageRoute<void>(
-      builder: (BuildContext context) {
-        return Scaffold(
-          appBar: AppBar(title: Text("검색어를 입력해 주세요")),
-        );
-      },
-    ),
-  );
+        //검색 페이지로 임의로 이동
+        MaterialPageRoute<void>(
+          builder: (BuildContext context) {
+            return Scaffold(
+              appBar: AppBar(title: Text("검색어를 입력해 주세요")),
+            );
+          },
+        ),
+      );
 
   void _dim(BuildContext context) async {
     String result = await showDialog(
@@ -195,14 +199,13 @@ class MyDrugListPage extends StatefulWidget {
 }
 
 class _MyDrugListPageState extends State<MyDrugListPage> {
-  final num = 0;
 
   Future getPosts() async {
-    var firestore = Firestore.instance;
+    var firestore = FirebaseFirestore.instance;
 
     QuerySnapshot drug = await firestore.collection('drug').getDocuments();
 
-    return drug.documents;
+    return drug.docs;
   }
 
   @override
@@ -222,12 +225,13 @@ class _MyDrugListPageState extends State<MyDrugListPage> {
                       Divider(color: Colors.grey[20]),
                   itemCount: snapshot.data.length,
                   itemBuilder: (_, index) {
+                    num = index + 1;
                     return GestureDetector(
                       onTap: () => {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => PhilInfoPage())),
+                                builder: (context) => PhilInfoPage(index))),
                       },
                       child: Container(
                         width: double.infinity,
@@ -238,9 +242,7 @@ class _MyDrugListPageState extends State<MyDrugListPage> {
                               children: [
                                 Container(
                                     padding: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                    child:
-                                    Text("1")
-                                ),
+                                    child: Text(num.toString())),
                                 Container(
                                   child: ClipRRect(
                                     child: Image(
@@ -248,24 +250,26 @@ class _MyDrugListPageState extends State<MyDrugListPage> {
                                         height: 70,
                                         fit: BoxFit.contain,
                                         alignment: Alignment.center,
-                                        image: NetworkImage(snapshot
-                                            .data[index].data['image'])),
+                                        // image: NetworkImage(snapshot
+                                        //     .data[index].data['image'])),
+                                        image: NetworkImage(
+                                            snapshot.data[index].get('image'))),
                                   ),
                                 ),
                                 Container(
-                                  //color: Colors.white,
-                                  //alignment: Alignment.center,
+                                    //color: Colors.white,
+                                    //alignment: Alignment.center,
                                     padding: EdgeInsets.fromLTRB(8, 5, 5, 5),
                                     child: Column(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                          MainAxisAlignment.center,
                                       crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Row(children: [
                                           Text(
-                                            snapshot
-                                                .data[index].data['ITEM_NAME'],
+                                            snapshot.data[index]
+                                                .get('ITEM_NAME'),
                                             style: TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.bold),
@@ -273,16 +277,16 @@ class _MyDrugListPageState extends State<MyDrugListPage> {
                                         ]),
                                         Expanded(
                                             child: Row(
-                                              children: [
-                                                _categoryButton((snapshot
-                                                    .data[index].data['category']))
-                                                //_categoryButton('hi')
-                                              ],
-                                            )),
+                                          children: [
+                                            _categoryButton((snapshot
+                                                .data[index]
+                                                .get('category')))
+                                            //_categoryButton('hi')
+                                          ],
+                                        )),
                                         Expanded(
                                           child: Text("2022.08.11"),
                                         )
-
                                       ],
                                     )),
                               ],
@@ -304,7 +308,6 @@ class _MyDrugListPageState extends State<MyDrugListPage> {
         minWidth: 10,
         height: 22,
         child: RaisedButton(
-
           child: Text(
             '#$str',
             style: TextStyle(color: Colors.teal[400], fontSize: 12.0),
