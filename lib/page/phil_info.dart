@@ -1,120 +1,102 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:category_list/Review/MyHomePage.dart';
 import 'package:category_list/page/see_more.dart';
+import 'package:category_list/page/expiration.dart';
 
-/* data 얻는 샘플 코드 - 참고용*/
-//  void getData() {
-//    fireInstance.collection("user").getDocs().then((QuerySnapshot snapshot) {
-//      snapshot.documents.forEach((f) => print('${f.data}}'));
-//    });
-//  }
+// 타이레놀 seq_num: 199303108
+// 이지엔 seq_num: 200400463
 
 class PhilInfoPage extends StatefulWidget {
+  int idx;
+  PhilInfoPage(this.idx);
+  // Stream data; //dan
+  // PhilInfoPage(data); // 이거만들었
+
   @override
-  _PhilInfoPageState createState() => _PhilInfoPageState();
+  _PhilInfoPageState createState() => _PhilInfoPageState(idx);
 }
 
 class _PhilInfoPageState extends State<PhilInfoPage> {
-  final fireInstance = Firestore.instance;
+  final fireInstance = FirebaseFirestore.instance;
 
-  //var favoriteList;
-  //List<String> favoriteList = [];
+  int idx;
+  _PhilInfoPageState(this.idx); //dan
 
-/* 약 이름, 회사 등 위쪽에 위치한 정보들 */
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            '약정보',
+            style: TextStyle(
+                color: Colors.black, letterSpacing: 2.0, fontSize: 18),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          elevation: 1.0,
+//          leading: Icon(
+//            Icons.arrow_back,
+//            color: Colors.teal[400],
+//          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () => {},
+              color: Colors.teal[400],
+            ),
+          ],
+        ),
+        backgroundColor: Colors.white,
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 20.0),
+                child: _topInfo(context),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                width: double.infinity,
+                height: 10.0,
+                child: Container(
+                  color: Colors.grey[200],
+                ),
+              ),
+            ),
+            /* FROM HERE: TAB */
+            SliverToBoxAdapter(
+              child: _myTab(),
+            )
+          ],
+        ));
+  }
+
+  /* 약 이름, 회사 등 위쪽에 위치한 정보들 */
   Widget _topInfo(context) {
     Stream drugStream = fireInstance.collection('drug').snapshots();
-    Stream savedListStream = fireInstance
-        .collection('user')
-        .document('1')
-        .collection('savedList')
-        .snapshots();
 
     return StreamBuilder(
         stream: drugStream,
         builder: (context, snapshot) {
+          int itemSeq = snapshot.data.documents[0]['ITEM_SEQ'];
+
           return Stack(children: [
             Positioned(
               top: 0,
               right: 0,
-              child: IconButton(
-                  padding: EdgeInsets.all(2.0),
-                  icon: Icon(
-                    Icons.announcement,
-                    color: Colors.amber[700],
-                  ),
-                  onPressed: () => _showWarning(context)),
+              child: _warningButton(context),
             ),
-
             Positioned(
-                bottom: 70,
-                right: 0,
-                child: IconButton(
-                  padding: EdgeInsets.all(2.0),
-                  icon: Icon(
-                    Icons.favorite_border,
-                    //alreadySaved ? Icons.favorite : Icons.favorite_border,
-                    //              //color: alreadySaved ? Colors.redAccent : null,
-                  ),
-                  onPressed: () => print('보관함 추가!'),
-                  // onPressed: () async => {
-                  // ref.updateData({
-                  //   favoriteList: FieldValue.arrayUnion(snapshot.data.documents[0]['ITEM_SEQ'])
-                  // });
-
-                  //}
-                )),
-
-            /*
-                Firestore.instance.
-                    .collection('friendships')
-                    .document(caller.data["uid"])
-                    .updateData({
-                  friends: FieldValue.arrayUnion({
-                    friendDisplayName: snapshot.data["friendDisplayName"],
-                    friendUid: snapshot.ref
-                  })
-                });
-                */
-
-            // TO DO: press 했을 때 collection에 list를 만들어 seq_num 을 저장한다 !!
-
-            // way 1)
-            // 1. DB에서 favoritelist를 불러와서,
-            // 2. 거기다가 원하는 약의 seq num을 add/delete 후
-            // 3. list에 updata나 add를 통해서 넣는다
-            // List<String> favoriteList = ;
-
-            // void createRecode(Map<String, dynamic> data) async {
-            // setState(() {
-            // isPressed[index] = !isPressed[index];
-            // isPressed[index]
-            // ? disease_list.add(buttonName)
-            //     : disease_list.remove(buttonName);
-            // });
-
-            // createRecode('disease_list': favoriteList)
-            // })),
-
-            // await fireInstance.collection('users').document('1').updateData(data);
-
-            // way 2) 바로 document의 favoriteList에 접근해서 add/delete 해준다
-
+              bottom: 70,
+              right: 0,
+              child: _favoriteButton(context, itemSeq),
+            ),
             Positioned(
               bottom: 0,
               right: 0,
-              child: ButtonTheme(
-                minWidth: 20,
-                height: 30,
-                child: FlatButton(
-                  color: Colors.teal[300],
-                  child: Text(
-                    '+ 담기',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: () => print('보관함 추가!'),
-                ),
-              ),
+              child: _addButton(context, itemSeq),
             ),
             Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,14 +112,14 @@ class _PhilInfoPageState extends State<PhilInfoPage> {
                     ),
                   ),
                   Text(
-                    snapshot.data.documents[0]['ENTP_NAME'],
+                    snapshot.data.documents[idx]['ENTP_NAME'],
                     //'동아제약',
                     style: TextStyle(
                       color: Colors.grey[600],
                     ),
                   ),
                   Text(
-                    snapshot.data.documents[0]['ITEM_NAME'],
+                    snapshot.data.documents[idx]['ITEM_NAME'],
 //                  '타이레놀',
                     style: TextStyle(
                         color: Colors.black,
@@ -165,38 +147,49 @@ class _PhilInfoPageState extends State<PhilInfoPage> {
         });
   }
 
-/* warning */
-  void _showWarning(context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        // return object of type Dialog
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-          title: new Text(
-            "질병주의",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.teal[400]),
-          ),
-          content: new Text("신장질환이 있는 환자는 반드시 의사와 상의할 것"),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text(
-                "닫기",
-                style: TextStyle(color: Colors.teal[200]),
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+  /* warning button */
+  Widget _warningButton(context) {
+    void _showWarning(context) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0)),
+            title: new Text(
+              "질병주의",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.teal[400]),
             ),
-          ],
-        );
-      },
+            content: new Text("신장질환이 있는 환자는 반드시 의사와 상의할 것"),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text(
+                  "닫기",
+                  style: TextStyle(color: Colors.teal[200]),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    return IconButton(
+      padding: EdgeInsets.all(2.0),
+      icon: Icon(
+        Icons.announcement,
+        color: Colors.amber[700],
+      ),
+      onPressed: () => _showWarning(context),
     );
   }
 
-/* 카테고리전용 button*/
+  /* category button */
   Widget _categoryButton(str) {
     return Container(
       width: 24 + str.length.toDouble() * 10,
@@ -218,7 +211,219 @@ class _PhilInfoPageState extends State<PhilInfoPage> {
     );
   }
 
-/* tab 구현 */
+  /* add button - when pressed, toggle on favoriteList */
+  /* ask? */
+  Widget _addButton(context, itemSeq) {
+    itemSeq = itemSeq.toString();
+
+    CollectionReference savedList =
+        fireInstance.collection('users/1/savedList');
+
+    /* using query - needed when we use document named randomly */
+    // Future<void> addToSaved(item_seq) {
+    //   int expiration = 99991231; //for test
+    //   return savedList
+    //       .add({
+    //         'ITEM_SEQ': item_seq,
+    //         'expiration': expiration,
+    //       })
+    //       .then((value) => print("Saved list Added"))
+    //       .catchError((error) => print("Failed to add saved list: $error"));
+    // }
+
+    // Future<int> isSaved(item_seq) async {
+    //   return await savedList
+    //       .where('ITEM_SEQ', isEqualTo: item_seq)
+    //       .get()
+    //       .then((QuerySnapshot) {
+    //     if (QuerySnapshot.size == 0) {
+    //       addToSaved(item_seq);
+    //     }
+    //   });
+    // }
+
+    Future<bool> isSaved() async {
+      bool saved;
+      await savedList.doc(itemSeq).get().then((docSnapshot) async {
+        saved = docSnapshot.exists;
+      });
+      return saved;
+    }
+
+    void _notify(context, str1, str2, str3) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0)),
+            title: Icon(
+              Icons.check_circle_outline,
+              color: Colors.teal[300],
+              size: 40,
+            ),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  str1,
+                  // textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+                Text(
+                  str2,
+                  // textAlign: TextAlign.center
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              Center(
+                child: FlatButton(
+                  child: Text(
+                    str3,
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    // TODO: 유통기한 입력하는 것 구현하기
+    Future<void> addToSaved() {
+      int expiration = 99991231; //for test
+      return savedList.doc(itemSeq).set({
+        'ITEM_SEQ': itemSeq,
+        'expiration': expiration,
+      }).then((value) {
+        print("Succeed to add");
+        _notify(context, '나의 상비약', '에 추가되었습니다.', '홈에서 확인하실 수 있습니다.');
+      }).catchError((error) => print("Failed to add: $error"));
+    }
+
+    Future<void> deleteFromSaved() {
+      return savedList.doc(itemSeq).delete().then((value) {
+        print("Succeed to delete");
+        _notify(context, '나의 상비약', '에서 삭제되었습니다.', '확인');
+      }).catchError((error) => print("Failed to delete: $error"));
+    }
+
+    return ButtonTheme(
+      minWidth: 20,
+      height: 30,
+      child: FlatButton(
+          color: Colors.teal[300],
+          child: Text(
+            '+ 담기',
+            style: TextStyle(color: Colors.white),
+          ),
+          onPressed: () async {
+            print('보관함 추가!');
+            print(await isSaved());
+            await isSaved() ? deleteFromSaved() : addToSaved();
+          }),
+    );
+  }
+
+  /* favorite button - when pressed, toggle on favoriteList */
+  Widget _favoriteButton(context, itemSeq) {
+    itemSeq = itemSeq.toString();
+
+    CollectionReference savedList =
+        fireInstance.collection('users/1/favoriteList');
+
+    void _notify(context, str1, str2, str3) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          // return object of type Dialog
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0)),
+            title: Icon(
+              Icons.check_circle_outline,
+              color: Colors.teal[300],
+              size: 40,
+            ),
+            content: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  str1,
+                  // textAlign: TextAlign.center,
+                  style: TextStyle(fontWeight: FontWeight.w900),
+                ),
+                Text(
+                  str2,
+                  // textAlign: TextAlign.center
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              Center(
+                child: FlatButton(
+                  child: Text(
+                    str3,
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
+    Future<bool> isFavorite() async {
+      bool saved;
+      await savedList.doc(itemSeq).get().then((docSnapshot) async {
+        saved = docSnapshot.exists;
+      });
+      return saved;
+    }
+
+    Future<void> addToFavorite() {
+      int expiration = 99991231; //for test
+      return savedList.doc(itemSeq).set({
+        'ITEM_SEQ': itemSeq,
+      }).then((value) {
+        print("Succeed to add");
+        _notify(context, '찜 목록', '에 추가되었습니다.', '마이페이지에서 확인하실 수 있습니다.');
+      }).catchError((error) => print("Failed to add: $error"));
+    }
+
+    Future<void> deleteFromFavorite() {
+      return savedList.doc(itemSeq).delete().then((value) {
+        print("Succeed to delete");
+        _notify(context, '찜 목록', '에서 삭제되었습니다.', '확인');
+      }).catchError((error) => print("Failed to delete: $error"));
+    }
+
+    return IconButton(
+      padding: EdgeInsets.all(2.0),
+      icon: Icon(
+        Icons.favorite_border,
+        color: null,
+        // await isFavorite() ? Icons.favorite : Icons.favorite_border,
+        // color: await isFavorite() ? Colors.redAccent : null,
+      ),
+      onPressed: () async {
+        print(await isFavorite());
+        await isFavorite() ? deleteFromFavorite() : addToFavorite();
+      },
+    );
+  }
+
+  /* tab bar */
   Widget _myTab() {
     return DefaultTabController(
         length: 2,
@@ -240,7 +445,7 @@ class _PhilInfoPageState extends State<PhilInfoPage> {
               width: double.infinity,
               height: 500.0,
               child: TabBarView(
-                /* 여기에 은영학우님 page 넣기! */
+                // TODO: 여기에 은영학우님 review page 넣기
                 children: [_specificInfo(), MyHomePage()],
               ),
             )
@@ -248,7 +453,7 @@ class _PhilInfoPageState extends State<PhilInfoPage> {
         ));
   }
 
-/* 약의 자세한 정보들 */
+  /* tab bar에 들어가는 자세한 정보들 */
   Widget _specificInfo() {
     return StreamBuilder(
         stream: fireInstance
@@ -329,223 +534,4 @@ class _PhilInfoPageState extends State<PhilInfoPage> {
           );
         });
   }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            '약정보',
-            style: TextStyle(
-                color: Colors.black, letterSpacing: 2.0, fontSize: 18),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 1.0,
-//          leading: Icon(
-//            Icons.arrow_back,
-//            color: Colors.teal[400],
-//          ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: () => {},
-              color: Colors.teal[400],
-            ),
-          ],
-        ),
-        backgroundColor: Colors.white,
-        body: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 20.0),
-                child: _topInfo(context),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: SizedBox(
-                width: double.infinity,
-                height: 10.0,
-                child: Container(
-                  color: Colors.grey[200],
-                ),
-              ),
-            ),
-            /* FROM HERE: TAB */
-            SliverToBoxAdapter(
-              child: _myTab(),
-            )
-          ],
-        ));
-  }
 }
-
-/* CRUD 참고 코드
-/// Firestore CRUD Logic
-
-// 문서 생성 (Create)
-void createDoc(String name, String description) {
-  Firestore.instance.collection(colName).add({
-    fnName: name,
-    fnDescription: description,
-    fnDatetime: Timestamp.now(),
-  });
-}
-
-// 문서 조회 (Read)
-void showDocument(String documentID) {
-  Firestore.instance
-      .collection(colName)
-      .document(documentID)
-      .get()
-      .then((doc) {
-    showReadDocSnackBar(doc);
-  });
-}
-
-// 문서 갱신 (Update)
-void updateDoc(String docID, String name, String description) {
-  Firestore.instance.collection(colName).document(docID).updateData({
-    fnName: name,
-    fnDescription: description,
-  });
-}
-
-// 문서 삭제 (Delete)
-void deleteDoc(String docID) {
-  Firestore.instance.collection(colName).document(docID).delete();
-}
-
-void showCreateDocDialog() {
-  showDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text("Create New Document"),
-        content: Container(
-          height: 200,
-          child: Column(
-            children: <Widget>[
-              TextField(
-                autofocus: true,
-                decoration: InputDecoration(labelText: "Name"),
-                controller: _newNameCon,
-              ),
-              TextField(
-                decoration: InputDecoration(labelText: "Description"),
-                controller: _newDescCon,
-              )
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          FlatButton(
-            child: Text("Cancel"),
-            onPressed: () {
-              _newNameCon.clear();
-              _newDescCon.clear();
-              Navigator.pop(context);
-            },
-          ),
-          FlatButton(
-            child: Text("Create"),
-            onPressed: () {
-              if (_newDescCon.text.isNotEmpty &&
-                  _newNameCon.text.isNotEmpty) {
-                createDoc(_newNameCon.text, _newDescCon.text);
-              }
-              _newNameCon.clear();
-              _newDescCon.clear();
-              Navigator.pop(context);
-            },
-          )
-        ],
-      );
-    },
-  );
-}
-
-void showReadDocSnackBar(DocumentSnapshot doc) {
-  _scaffoldKey.currentState
-    ..hideCurrentSnackBar()
-    ..showSnackBar(
-      SnackBar(
-        backgroundColor: Colors.deepOrangeAccent,
-        duration: Duration(seconds: 5),
-        content: Text(
-            "$fnName: ${doc[fnName]}\n$fnDescription: ${doc[fnDescription]}"
-                "\n$fnDatetime: ${timestampToStrDateTime(doc[fnDatetime])}"),
-        action: SnackBarAction(
-          label: "Done",
-          textColor: Colors.white,
-          onPressed: () {},
-        ),
-      ),
-    );
-}
-
-void showUpdateOrDeleteDocDialog(DocumentSnapshot doc) {
-  _undNameCon.text = doc[fnName];
-  _undDescCon.text = doc[fnDescription];
-  showDialog(
-    barrierDismissible: false,
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text("Update/Delete Document"),
-        content: Container(
-          height: 200,
-          child: Column(
-            children: <Widget>[
-              TextField(
-                decoration: InputDecoration(labelText: "Name"),
-                controller: _undNameCon,
-              ),
-              TextField(
-                decoration: InputDecoration(labelText: "Description"),
-                controller: _undDescCon,
-              )
-            ],
-          ),
-        ),
-        actions: <Widget>[
-          FlatButton(
-            child: Text("Cancel"),
-            onPressed: () {
-              _undNameCon.clear();
-              _undDescCon.clear();
-              Navigator.pop(context);
-            },
-          ),
-          FlatButton(
-            child: Text("Update"),
-            onPressed: () {
-              if (_undNameCon.text.isNotEmpty &&
-                  _undDescCon.text.isNotEmpty) {
-                updateDoc(doc.documentID, _undNameCon.text, _undDescCon.text);
-              }
-              Navigator.pop(context);
-            },
-          ),
-          FlatButton(
-            child: Text("Delete"),
-            onPressed: () {
-              deleteDoc(doc.documentID);
-              Navigator.pop(context);
-            },
-          )
-        ],
-      );
-    },
-  );
-}
-
-String timestampToStrDateTime(Timestamp ts) {
-  return DateTime.fromMicrosecondsSinceEpoch(ts.microsecondsSinceEpoch)
-      .toString();
-}
-}
-
-*/
