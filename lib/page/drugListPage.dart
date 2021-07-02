@@ -32,11 +32,11 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: StreamBuilder(
-          stream: Firestore.instance.collection("category").snapshots(),
+          stream: FirebaseFirestore.instance.collection("category").snapshots(),
           builder: (context, snapshot) {
             return Column(
               children: <Widget>[
-                //container부분에 if문으로 item개수 처리
+                //container부분에 if문으로 item 개수 처리
                 //[index]안에 있는 수를 category별로 다르게 지정해주어야 한다.
                 Container(
                   //한칸당 3개의 버튼 가질 수 있음
@@ -145,11 +145,11 @@ class ListPage extends StatefulWidget {
 
 class _ListPageState extends State<ListPage> {
   Future getPosts() async {
-    var firestore = Firestore.instance;
+    var firestore = FirebaseFirestore.instance;
 
-    QuerySnapshot drug = await firestore.collection('drug').getDocuments();
+    QuerySnapshot drug = await firestore.collection('drug').get();
 
-    return drug.documents;
+    return drug.docs;
   }
 
   @override
